@@ -1,0 +1,10 @@
+[project]
+name = "shapenetdb"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "setuptools>=80.9.0",
+    "vectordb>=0.0.21",
+]
