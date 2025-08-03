@@ -33,6 +33,13 @@ ShapenetDB/
 
 ## Quick Start
 
+### 0. Dependencies
+
+1. `uv sync`
+2. to use newer torch versions, overwrite open-clip-torch's torch, e.g.: `uv pip install --upgrade --force-reinstall torch --index-url https://download.pytorch.org/whl/cu128`. 
+
+## Quick Start
+
 ### 1. Basic Usage
 
 ```python
@@ -82,6 +89,36 @@ for result in results:
     print(f"Query: {result['query_text']}")
 ```
 
+### 3. Batch Text Search
+
+```python
+# Search multiple queries at once
+queries = ["chair", "table", "car", "airplane"]
+batch_results = text_search.batch_text_search(queries, limit=3)
+
+for query, results in zip(queries, batch_results):
+    print(f"Results for '{query}':")
+    for result in results:
+        print(f"  {result['shape_id']} (score: {result['score']:.4f})")
+```
+
+### 2. Text-Based Search
+
+```python
+from text_search import create_text_search
+
+# Create text search (requires CLIP model)
+text_search = create_text_search(db)
+
+# Search using natural language
+results = text_search.search_by_text("wooden chair with four legs", limit=5)
+
+# Access results
+for result in results:
+    print(f"Shape: {result['shape_id']}, Score: {result['score']:.4f}")
+    print(f"Query: {result['query_text']}")
+```
+
 ### 3. Custom Embedding Query
 
 ```python
@@ -94,7 +131,19 @@ custom_embedding = np.random.randn(1280).astype(np.float32)
 results = db.search_similar(custom_embedding, limit=5)
 ```
 
-### 4. Shape ID Lookup
+### 4. Custom Embedding Query
+
+```python
+import numpy as np
+
+# Create a custom query embedding (e.g., from your model)
+custom_embedding = np.random.randn(1280).astype(np.float32)
+
+# Search with custom embedding
+results = db.search_similar(custom_embedding, limit=5)
+```
+
+### 5. Shape ID Lookup
 
 ```python
 # Find a specific shape by ID
@@ -126,17 +175,14 @@ python text_search_examples.py
 python test_text_search.py
 ```
 
-### Interactive Text Search
-```python
-from text_search import create_text_search
-from shapenet_vectordb import create_shapenet_db
+### Final Comprehensive Demo
+```bash
+python final_demo.py
+```
 
-db = create_shapenet_db()
-db.index_embeddings(max_files=100)  # Index subset for testing
-text_search = create_text_search(db)
-
-# Search with natural language
-results = text_search.search_by_text("red chair", limit=5)
+### Interactive Mode
+```bash
+python final_demo.py --interactive
 ```
 
 ## Configuration Options

@@ -1,0 +1,52 @@
+[
+  {
+    "shape_id": "03001627-ba747d0535cb7fdfbfb5bf9fe49f43af",
+    "score": 0.6355369091033936,
+    "pc_path": "shapenet/shapenet_pc/03001627-ba747d0535cb7fdfbfb5bf9fe49f43af.npy",
+    "embedding_path": "shapenet/shapenet_embedding/03001627-ba747d0535cb7fdfbfb5bf9fe49f43af_embedding.npy",
+    "metadata": {
+      "indexed_at": "batch_3"
+    },
+    "query_text": "wooden chair"
+  },
+  {
+    "shape_id": "03001627-2ab159f83754a93ea6c03a53cf0a14c9",
+    "score": 0.6379221677780151,
+    "pc_path": "shapenet/shapenet_pc/03001627-2ab159f83754a93ea6c03a53cf0a14c9.npy",
+    "embedding_path": "shapenet/shapenet_embedding/03001627-2ab159f83754a93ea6c03a53cf0a14c9_embedding.npy",
+    "metadata": {
+      "indexed_at": "batch_4"
+    },
+    "query_text": "wooden chair"
+  },
+  {
+    "shape_id": "03001627-ee665ce6679ac8cfb502ac2eb9128f9a",
+    "score": 0.644316554069519,
+    "pc_path": "shapenet/shapenet_pc/03001627-ee665ce6679ac8cfb502ac2eb9128f9a.npy",
+    "embedding_path": "shapenet/shapenet_embedding/03001627-ee665ce6679ac8cfb502ac2eb9128f9a_embedding.npy",
+    "metadata": {
+      "indexed_at": "batch_2"
+    },
+    "query_text": "wooden chair"
+  },
+  {
+    "shape_id": "03001627-d54100efac3ab743626ced72908b525d",
+    "score": 0.654384970664978,
+    "pc_path": "shapenet/shapenet_pc/03001627-d54100efac3ab743626ced72908b525d.npy",
+    "embedding_path": "shapenet/shapenet_embedding/03001627-d54100efac3ab743626ced72908b525d_embedding.npy",
+    "metadata": {
+      "indexed_at": "batch_4"
+    },
+    "query_text": "wooden chair"
+  },
+  {
+    "shape_id": "03001627-f23c1bb951fa8909bc01640b1b5116e7",
+    "score": 0.654397189617157,
+    "pc_path": "shapenet/shapenet_pc/03001627-f23c1bb951fa8909bc01640b1b5116e7.npy",
+    "embedding_path": "shapenet/shapenet_embedding/03001627-f23c1bb951fa8909bc01640b1b5116e7_embedding.npy",
+    "metadata": {
+      "indexed_at": "batch_2"
+    },
+    "query_text": "wooden chair"
+  }
+]
