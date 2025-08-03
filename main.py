@@ -1,5 +1,6 @@
 import numpy as np
 from shapenet_vectordb import create_shapenet_db
+from text_search import create_text_search
 
 
 def main():
@@ -56,8 +57,9 @@ def main():
                 
                 print(f"\nFound {len(similar_shapes)} similar shapes:")
                 for i, result in enumerate(similar_shapes, 1):
+                    score_str = f"{result['score']:.4f}" if result['score'] is not None else "N/A"
                     print(f"  {i}. Shape ID: {result['shape_id']}")
-                    print(f"     Similarity Score: {result['score']:.4f}")
+                    print(f"     Similarity Score: {score_str}")
                     print(f"     Point Cloud Path: {result['pc_path']}")
                     print()
                 
@@ -75,6 +77,53 @@ def main():
                         print(f"  Point cloud path: {point_result['pc_path']}")
                     else:
                         print(f"Shape '{search_shape_id}' not found")
+                
+                # Demonstrate text search
+                print("\n" + "=" * 40)
+                print("Demonstrating Text Search")
+                print("=" * 40)
+                
+                try:
+                    # Check if CLIP model exists
+                    import os
+                    model_path = "models/open_clip_pytorch_model.bin"
+                    if os.path.exists(model_path):
+                        print("Loading CLIP model for text search...")
+                        text_search = create_text_search(db)
+                        
+                        # Test text queries
+                        test_queries = [
+                            "chair",
+                            "table",
+                            "car with wheels"
+                        ]
+                        
+                        for query in test_queries:
+                            print(f"\n🔍 Text search for: '{query}'")
+                            try:
+                                text_results = text_search.search_by_text(query, limit=3)
+                                
+                                if text_results:
+                                    print(f"Found {len(text_results)} results:")
+                                    for i, result in enumerate(text_results, 1):
+                                        score_str = f"{result['score']:.4f}" if result['score'] is not None else "N/A"
+                                        print(f"  {i}. {result['shape_id']} (similarity: {score_str})")
+                                else:
+                                    print("No results found")
+                            except Exception as e:
+                                print(f"Error in text search: {e}")
+                        
+                        print("\n✅ Text search working! You can now search using natural language.")
+                        
+                    else:
+                        print(f"CLIP model not found at: {model_path}")
+                        print("Text search requires the CLIP model to be available.")
+                        print("The vector database still works for embedding-based search.")
+                        
+                except Exception as e:
+                    print(f"Error setting up text search: {e}")
+                    print("Vector database still works for embedding-based search.")
+                
             else:
                 print(f"Could not load data for shape '{test_shape_id}'")
         else:
@@ -113,14 +162,66 @@ def demo_custom_query():
     
     print(f"Found {len(results)} results:")
     for i, result in enumerate(results, 1):
+        score_str = f"{result['score']:.4f}" if result['score'] is not None else "N/A"
         print(f"  {i}. Shape: {result['shape_id']}")
-        print(f"     Score: {result['score']:.4f}")
+        print(f"     Score: {score_str}")
         if result.get('point_cloud') is not None:
             print(f"     Point cloud shape: {result['point_cloud'].shape}")
+
+
+def demo_text_search():
+    """
+    Demonstrate text search functionality.
+    """
+    print("\n" + "=" * 40)
+    print("Text Search Demo")
+    print("=" * 40)
+    
+    # Create database
+    db = create_shapenet_db()
+    
+    if not db.is_indexed:
+        print("Database needs to be indexed first. Run the main demo.")
+        return
+    
+    try:
+        # Create text search
+        text_search = create_text_search(db)
+        
+        # Interactive text search
+        print("Interactive text search - enter descriptions to search for shapes:")
+        print("Type 'quit' to exit")
+        
+        while True:
+            query = input("\nEnter text description: ").strip()
+            
+            if query.lower() == 'quit':
+                break
+            
+            if not query:
+                continue
+            
+            try:
+                results = text_search.search_by_text(query, limit=3)
+                
+                if results:
+                    print(f"Found {len(results)} results for '{query}':")
+                    for i, result in enumerate(results, 1):
+                        score_str = f"{result['score']:.4f}" if result['score'] is not None else "N/A"
+                        print(f"  {i}. {result['shape_id']} (similarity: {score_str})")
+                else:
+                    print("No results found")
+                    
+            except Exception as e:
+                print(f"Error: {e}")
+    
+    except Exception as e:
+        print(f"Error setting up text search: {e}")
 
 
 if __name__ == "__main__":
     main()
     
-    # Uncomment the line below to run the custom query demo
+    # Uncomment the lines below to run additional demos
     # demo_custom_query()
+    # demo_text_search()

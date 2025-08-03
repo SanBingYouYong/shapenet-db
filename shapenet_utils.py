@@ -111,6 +111,10 @@ class ShapeNetDBUtils:
                 "metadata": result.get("metadata", {})
             }
             
+            # Include query text if available (from text search)
+            if "query_text" in result:
+                export_item["query_text"] = result["query_text"]
+            
             if include_embeddings and "embedding" in result:
                 # Convert numpy array to list for JSON serialization
                 export_item["embedding"] = result["embedding"].tolist()
@@ -148,6 +152,122 @@ class ShapeNetDBUtils:
             json.dump(index_data, f, indent=2)
         
         print(f"Created embedding index file: {output_file}")
+
+
+class ShapeNetTextSearchUtils:
+    """Utility class for text search operations."""
+    
+    def __init__(self, text_search):
+        self.text_search = text_search
+    
+    def batch_text_search_with_export(
+        self,
+        queries: List[str],
+        output_dir: str = "./text_search_results",
+        limit: int = 10
+    ):
+        """
+        Perform batch text search and export results.
+        
+        Args:
+            queries: List of text queries
+            output_dir: Directory to save results
+            limit: Number of results per query
+        """
+        os.makedirs(output_dir, exist_ok=True)
+        
+        all_results = {}
+        for i, query in enumerate(queries):
+            print(f"Processing query {i+1}/{len(queries)}: '{query}'")
+            
+            results = self.text_search.search_by_text(query, limit=limit)
+            all_results[query] = results
+            
+            # Export individual query results
+            safe_query = "".join(c for c in query if c.isalnum() or c in (' ', '-', '_')).strip()
+            safe_query = safe_query.replace(' ', '_')
+            output_file = os.path.join(output_dir, f"query_{i+1}_{safe_query}.json")
+            
+            utils = ShapeNetDBUtils(self.text_search.vectordb)
+            utils.export_search_results(results, output_file)
+        
+        # Export combined results
+        combined_file = os.path.join(output_dir, "all_queries.json")
+        with open(combined_file, 'w') as f:
+            # Convert numpy arrays to lists for JSON serialization
+            json_results = {}
+            for query, results in all_results.items():
+                json_results[query] = [
+                    {k: v for k, v in result.items() if k != 'embedding'}
+                    for result in results
+                ]
+            json.dump(json_results, f, indent=2)
+        
+        print(f"Exported combined results to: {combined_file}")
+        return all_results
+    
+    def evaluate_text_search_quality(
+        self,
+        test_queries: List[str],
+        expected_categories: List[str] = None,
+        limit: int = 5
+    ) -> Dict[str, Any]:
+        """
+        Evaluate text search quality.
+        
+        Args:
+            test_queries: List of test queries
+            expected_categories: Expected shape categories for each query
+            limit: Number of results to evaluate per query
+            
+        Returns:
+            Dictionary with evaluation metrics
+        """
+        results = {}
+        
+        for i, query in enumerate(test_queries):
+            search_results = self.text_search.search_by_text(query, limit=limit)
+            
+            query_metrics = {
+                'query': query,
+                'num_results': len(search_results),
+                'scores': [r['score'] for r in search_results if r['score'] is not None],
+                'shape_ids': [r['shape_id'] for r in search_results]
+            }
+            
+            if query_metrics['scores']:
+                query_metrics['mean_score'] = np.mean(query_metrics['scores'])
+                query_metrics['max_score'] = np.max(query_metrics['scores'])
+                query_metrics['min_score'] = np.min(query_metrics['scores'])
+            
+            results[query] = query_metrics
+        
+        # Overall statistics
+        all_scores = []
+        for metrics in results.values():
+            all_scores.extend(metrics.get('scores', []))
+        
+        overall_metrics = {
+            'total_queries': len(test_queries),
+            'total_results': sum(len(m['shape_ids']) for m in results.values()),
+            'mean_results_per_query': np.mean([len(m['shape_ids']) for m in results.values()]),
+        }
+        
+        if all_scores:
+            overall_metrics.update({
+                'overall_mean_score': np.mean(all_scores),
+                'overall_std_score': np.std(all_scores),
+                'score_distribution': {
+                    'min': np.min(all_scores),
+                    'max': np.max(all_scores),
+                    'median': np.median(all_scores)
+                }
+            })
+        
+        return {
+            'query_results': results,
+            'overall_metrics': overall_metrics
+        }
 
 
 def benchmark_search_performance(

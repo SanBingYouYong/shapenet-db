@@ -5,6 +5,7 @@ A Python vector database for ShapeNet embeddings with similarity search and poin
 ## Features
 
 - **Fast Similarity Search**: Uses HNSW (Hierarchical Navigable Small World) algorithm for efficient approximate nearest neighbor search
+- **Text-Based Search**: Search shapes using natural language descriptions via CLIP model
 - **Point Cloud Mapping**: Maps search results back to original ShapeNet point clouds
 - **Batch Processing**: Efficient batch indexing and searching capabilities
 - **Flexible Database Types**: Support for both exact and approximate search
@@ -19,9 +20,13 @@ ShapenetDB/
 ├── shapenet/
 │   ├── shapenet_pc/          # 50k+ .npy point cloud files
 │   └── shapenet_embedding/   # 50k+ .npy embedding files (with _embedding suffix)
+├── models/
+│   └── open_clip_pytorch_model.bin  # CLIP model for text search
 ├── shapenet_vectordb.py      # Main vector database implementation
+├── text_search.py            # Text search functionality using CLIP
 ├── shapenet_utils.py         # Utility functions
 ├── examples.py               # Usage examples
+├── text_search_examples.py   # Text search examples
 ├── main.py                   # Demo script
 └── README.md                 # This file
 ```
@@ -60,7 +65,24 @@ for result in similar_shapes:
         print(f"Point cloud shape: {result['point_cloud'].shape}")
 ```
 
-### 2. Custom Embedding Query
+### 2. Text-Based Search
+
+```python
+from text_search import create_text_search
+
+# Create text search (requires CLIP model)
+text_search = create_text_search(db)
+
+# Search using natural language
+results = text_search.search_by_text("wooden chair with four legs", limit=5)
+
+# Access results
+for result in results:
+    print(f"Shape: {result['shape_id']}, Score: {result['score']:.4f}")
+    print(f"Query: {result['query_text']}")
+```
+
+### 3. Custom Embedding Query
 
 ```python
 import numpy as np
@@ -72,7 +94,7 @@ custom_embedding = np.random.randn(1280).astype(np.float32)
 results = db.search_similar(custom_embedding, limit=5)
 ```
 
-### 3. Shape ID Lookup
+### 4. Shape ID Lookup
 
 ```python
 # Find a specific shape by ID
@@ -94,14 +116,27 @@ python main.py
 python examples.py
 ```
 
-### Interactive Demo
+### Text Search Examples
+```bash
+python text_search_examples.py
+```
+
+### Test Text Search
+```bash
+python test_text_search.py
+```
+
+### Interactive Text Search
 ```python
-from shapenet_utils import interactive_search_demo
+from text_search import create_text_search
 from shapenet_vectordb import create_shapenet_db
 
 db = create_shapenet_db()
 db.index_embeddings(max_files=100)  # Index subset for testing
-interactive_search_demo(db)
+text_search = create_text_search(db)
+
+# Search with natural language
+results = text_search.search_by_text("red chair", limit=5)
 ```
 
 ## Configuration Options
@@ -170,6 +205,13 @@ Utility class for advanced operations:
 - `get_embedding_statistics()`: Get embedding statistics
 - `export_search_results(results, output_file)`: Export results to JSON
 - `create_embedding_index_file(output_file)`: Create index file
+
+### ShapeNetTextSearchUtils
+
+Utility class for text search operations:
+
+- `batch_text_search_with_export(queries, output_dir)`: Batch text search with export
+- `evaluate_text_search_quality(test_queries)`: Evaluate text search performance
 
 ## Performance Optimization
 
@@ -248,8 +290,25 @@ logging.basicConfig(level=logging.INFO)
 
 - Python >= 3.11
 - vectordb >= 0.0.21
+- open-clip-torch >= 2.24.0
+- torch (automatically installed with open-clip-torch)
 - numpy
 - docarray (automatically installed with vectordb)
+
+### Installing Dependencies
+
+```bash
+pip install vectordb open-clip-torch numpy
+```
+
+### CLIP Model Setup
+
+The text search functionality requires a pre-trained CLIP model. Place the model file at:
+```
+models/open_clip_pytorch_model.bin
+```
+
+The system uses the ViT-bigG-14 CLIP model architecture compatible with ULIP2 embeddings.
 
 ## License
 
