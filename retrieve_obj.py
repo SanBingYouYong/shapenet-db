@@ -41,7 +41,9 @@ def extract_object_from_shapenetcore(zip_root_dir, synset_id, object_id, output_
 
 # === Example usage ===
 if __name__ == "__main__":
-    zip_path = "~/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/snapshots/0efb24cbe6828a85771a28335c5f7b5626514d9b/"
+    # TODO: we now have a symlink
+    # zip_path = "~/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/snapshots/0efb24cbe6828a85771a28335c5f7b5626514d9b/"
+    zip_path = "./hf_shapenet_zips"
     synset_id = "02691156"  # e.g., chairs
     object_id = "b089abdb33c39321afd477f714c68df9"  # a specific chair
     output_dir = "./shapenet_models"
