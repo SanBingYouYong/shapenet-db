@@ -221,99 +221,11 @@ class ShapeNetTextSearch:
         }
 
 
-def create_text_search(
-    vectordb: ShapeNetVectorDB,
-    model_path: str = "models/open_clip_pytorch_model.bin",
-    model_name: str = "ViT-bigG-14",
-    device: Optional[str] = None
-) -> ShapeNetTextSearch:
-    """
-    Convenience function to create a text search instance.
-    
-    Args:
-        vectordb: ShapeNet vector database instance
-        model_path: Path to the CLIP model checkpoint
-        model_name: Name of the CLIP model architecture
-        device: Device to run the model on
-        
-    Returns:
-        ShapeNetTextSearch instance
-    """
-    return ShapeNetTextSearch(
-        vectordb=vectordb,
-        model_path=model_path,
-        model_name=model_name,
-        device=device
-    )
+if __name__ == '__main__':
+    db = ShapeNetVectorDB()
+    db.index_embeddings(batch_size=100, max_files=1000)
+    text_search = ShapeNetTextSearch(db)
+    results = text_search.search_by_text("chair", limit=5)
+    from pprint import pprint
+    pprint(results)
 
-
-# Predefined text queries for common shapes
-COMMON_SHAPE_QUERIES = [
-    # Furniture
-    "chair with four legs",
-    "wooden table",
-    "office chair with wheels",
-    "round dining table",
-    "bookshelf with multiple shelves",
-    "sofa with cushions",
-    "bed with headboard",
-    "desk lamp",
-    
-    # Vehicles
-    "car with four wheels",
-    "airplane with wings",
-    "motorcycle",
-    "bicycle",
-    "truck",
-    "helicopter with rotor blades",
-    
-    # Electronics
-    "computer monitor",
-    "laptop computer",
-    "telephone",
-    "radio",
-    "television",
-    
-    # Kitchen items
-    "coffee mug",
-    "wine bottle",
-    "kitchen knife",
-    "plate",
-    "bowl",
-    
-    # Tools and objects
-    "screwdriver",
-    "hammer",
-    "scissors",
-    "pen",
-    "book",
-    "clock",
-    
-    # Animals (if present in dataset)
-    "dog",
-    "cat",
-    "bird",
-    "fish",
-    
-    # Abstract descriptions
-    "round object",
-    "long thin object",
-    "square shaped item",
-    "curved surface",
-    "geometric shape",
-    "symmetrical object"
-]
-
-
-def demo_text_search_queries() -> List[str]:
-    """Get a list of demo text queries for testing."""
-    return [
-        "wooden chair",
-        "round table",
-        "car with wheels",
-        "airplane",
-        "computer laptop",
-        "coffee cup",
-        "book",
-        "lamp with shade"
-    ]

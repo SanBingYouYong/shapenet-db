@@ -313,30 +313,12 @@ class ShapeNetVectorDB:
         return shape_ids
 
 
-def create_shapenet_db(
-    workspace: str = "./shapenet_vectordb",
-    db_type: str = "hnsw",
-    pc_dir: str = "shapenet/shapenet_pc", 
-    embedding_dir: str = "shapenet/shapenet_embedding",
-    **kwargs
-) -> ShapeNetVectorDB:
-    """
-    Convenience function to create a ShapeNet vector database.
-    
-    Args:
-        workspace: Directory to store the vector database
-        db_type: Type of vector database ("hnsw" or "exact")
-        pc_dir: Directory containing point cloud .npy files
-        embedding_dir: Directory containing embedding .npy files
-        **kwargs: Additional arguments for the vector database
-        
-    Returns:
-        ShapeNetVectorDB instance
-    """
-    return ShapeNetVectorDB(
-        workspace=workspace,
-        db_type=db_type, 
-        pc_dir=pc_dir,
-        embedding_dir=embedding_dir,
-        **kwargs
+if __name__ == '__main__':
+    shapenet_db = ShapeNetVectorDB()
+    shapenet_db.index_embeddings(batch_size=100, max_files=1000)
+    result = shapenet_db.search_similar(
+        query_embedding=np.random.rand(1280),  # Example random query embedding
+        limit=5,
     )
+    from pprint import pprint
+    pprint(result)

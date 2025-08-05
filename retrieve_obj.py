@@ -3,16 +3,18 @@ import os
 from pathlib import Path
 import shutil
 
-def extract_object_from_shapenetcore(zip_root_dir, synset_id, object_id, output_dir):
+def retrieve_shapenet_model(shape_id: str, 
+                            output_dir: str = "./retrieved", 
+                            zip_root_dir: str = "hf_shapenet_zips"):
     """
     Extract a ShapeNetCore model folder from a ZIP file without full extraction.
 
     Args:
-        zip_root_dir (str or Path): Directory containing <synset_id>.zip files.
-        synset_id (str): Category ID (e.g., '03001627' for chairs).
-        object_id (str): Object ID (e.g., '1a04e3eab45ca15dd86060f189eb133').
+        shape_id (str): Shape ID in the form "synset_id-object_id".
         output_dir (str or Path): Destination directory to extract files to.
+        zip_root_dir (str or Path): Directory containing <synset_id>.zip files.
     """
+    synset_id, object_id = shape_id.split("-")
     zip_path = Path(zip_root_dir).expanduser() / f"{synset_id}.zip"
     output_dir = Path(output_dir).expanduser()
     folder_path = f"{synset_id}/{object_id}/"
@@ -41,11 +43,12 @@ def extract_object_from_shapenetcore(zip_root_dir, synset_id, object_id, output_
 
 # === Example usage ===
 if __name__ == "__main__":
-    # TODO: we now have a symlink
-    # zip_path = "~/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/snapshots/0efb24cbe6828a85771a28335c5f7b5626514d9b/"
     zip_path = "./hf_shapenet_zips"
-    synset_id = "02691156"  # e.g., chairs
-    object_id = "b089abdb33c39321afd477f714c68df9"  # a specific chair
+    shape_id = "02691156-b089abdb33c39321afd477f714c68df9"  # synset_id-object_id
     output_dir = "./shapenet_models"
 
-    extract_object_from_shapenetcore(zip_path, synset_id, object_id, output_dir)
+    retrieve_shapenet_model(
+        shape_id=shape_id, 
+        output_dir=output_dir, 
+        zip_root_dir=zip_path
+    )
