@@ -40,6 +40,7 @@ ENV PATH="/app/.venv/bin:$PATH"
 
 # Copy the application code (excluding data directories)
 COPY *.py ./
+COPY utils/ ./utils/
 # COPY pyproject.toml requirements.txt ./
 # COPY download_model.sh ./
 COPY README.md ./
