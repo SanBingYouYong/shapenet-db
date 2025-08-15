@@ -30,8 +30,8 @@ def retrieve_shapenet_model(shape_id: str,
         # Copy all files and subfolders under the folder_path
         for member in zipf.namelist():
             if member.startswith(folder_path) and member != folder_path:
-                # Compute the relative path inside the object folder
-                rel_path = Path(member).relative_to(synset_id)
+                # Compute the relative path preserving the full structure
+                rel_path = Path(member)
                 target_path = output_dir / rel_path
                 if member.endswith('/'):
                     target_path.mkdir(parents=True, exist_ok=True)
