@@ -31,6 +31,8 @@ ShapenetDB/
 
 ## Quick Start
 
+- check `server` branch for a Dockerfile and running the text-based search as a local server
+
 ### 0. Dependencies
 
 1. `uv sync` or `pip install -r requirements.txt`
