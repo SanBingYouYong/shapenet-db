@@ -52,8 +52,9 @@ docker run -it --rm --gpus all  -v $(pwd)/models:/app/models   -v $(pwd)/shapene
 e.g.: (in addition, we need to mount blob/hash files accroding to zip (actually symlinks))
 
 ```bash
-docker run -it --rm --gpus all -v /home/shuyuan/ULIP/ulip_models/:/app/models -v /home/shuyuan/ULIP/shapenet/:/app/shapenet -v /home/shuyuan/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/snapshots/0efb24cbe6828a85771a28335c5f7b5626514d9b:/app/hf_shapenet_zips -v /home/shuyuan/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/blobs:/blobs -v $(pwd)/retrieved:/app/retrieved -v $(pwd)/shapenet_vectordb:/app/shapenet_vectordb   shapenet_db:latest
+docker run -it --gpus all -v /home/shuyuan/ULIP/ulip_models/:/app/models -v /home/shuyuan/ULIP/shapenet/:/app/shapenet -v /home/shuyuan/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/snapshots/0efb24cbe6828a85771a28335c5f7b5626514d9b:/app/hf_shapenet_zips -v /home/shuyuan/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/blobs:/blobs -v $(pwd)/retrieved:/app/retrieved -v $(pwd)/shapenet_vectordb:/app/shapenet_vectordb -p 8001:8001 --name shapenet_db shapenet_db_server:latest
 ```
+- please remember to clean up ./retrieved dir in case many files are retrieved
 
 ### 1. Basic Usage
 
