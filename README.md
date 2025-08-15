@@ -40,6 +40,21 @@ ShapenetDB/
 5. Use [ulip2 encoder](https://github.com/SanBingYouYong/ulip2_encoder) to embed all shapenet point cloud (using the point cloud from ulip's triplets)
     - the coverage of ULIP shapenet triplet on shapenet core v2 is tested
 
+### 0.1 Running in Docker
+
+0. build the image with `docker build -t shapenet_db .`
+1. run command: replace any symlinks to actual paths
+
+```bash
+docker run -it --rm --gpus all  -v $(pwd)/models:/app/models   -v $(pwd)/shapenet:/app/shapenet   -v $(pwd)/hf_shapenet_zips:/app/hf_shapenet_zips   -v $(pwd)/retrieved:/app/retrieved   -v $(pwd)/shapenet_vectordb:/app/shapenet_vectordb   shapenet_db:latest
+```
+
+e.g.: (in addition, we need to mount blob/hash files accroding to zip (actually symlinks))
+
+```bash
+docker run -it --rm --gpus all -v /home/shuyuan/ULIP/ulip_models/:/app/models -v /home/shuyuan/ULIP/shapenet/:/app/shapenet -v /home/shuyuan/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/snapshots/0efb24cbe6828a85771a28335c5f7b5626514d9b:/app/hf_shapenet_zips -v /home/shuyuan/.cache/huggingface/hub/datasets--ShapeNet--ShapeNetCore/blobs:/blobs -v $(pwd)/retrieved:/app/retrieved -v $(pwd)/shapenet_vectordb:/app/shapenet_vectordb   shapenet_db:latest
+```
+
 ### 1. Basic Usage
 
 `python main.py --text <query, e.g. chair>` will retrieve a best match 3D model and put the content under `retrieved/` folder. 
